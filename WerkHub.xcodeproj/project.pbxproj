@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C479BFA42D437A4800ABB52D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C479BFA32D437A4800ABB52D /* FirebaseAnalytics */; };
 		C479BFA72D437E2E00ABB52D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C479BFA62D437E2E00ABB52D /* FirebaseAuth */; };
+		C4BB74EC2D43A60E00C1CFFB /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = C4BB74EB2D43A60E00C1CFFB /* .gitignore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		C477740B2D398A54002DC5B1 /* WerkHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WerkHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C477741B2D398A55002DC5B1 /* WerkHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WerkHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C47774252D398A55002DC5B1 /* WerkHubUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WerkHubUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4BB74EB2D43A60E00C1CFFB /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +84,7 @@
 		C47774022D398A54002DC5B1 = {
 			isa = PBXGroup;
 			children = (
+				C4BB74EB2D43A60E00C1CFFB /* .gitignore */,
 				C477740D2D398A54002DC5B1 /* WerkHub */,
 				C477741E2D398A55002DC5B1 /* WerkHubTests */,
 				C47774282D398A55002DC5B1 /* WerkHubUITests */,
@@ -232,6 +235,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C4BB74EC2D43A60E00C1CFFB /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
