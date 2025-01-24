@@ -18,6 +18,20 @@ struct SignUpView: View {
     // Tipos de cuenta
     let accountTypes = ["Artista", "Promotor"]
     
+    func signUp(){
+        Task {
+            do{
+                let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
+                print("Success")
+                print(returnedUserData)
+            }
+            catch{
+                print("Error: \(error)")
+            }
+        }
+    }
+    
+    
     var body: some View {
         ZStack {
             // Fondo
@@ -86,9 +100,12 @@ struct SignUpView: View {
                         errorMessage = "Las contraseñas no coinciden"
                     } else if !validatePassword(password) {
                         errorMessage = "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial."
+                    } else if !isValidEmail(email) {
+                        errorMessage = "Formato de correo inválido"
                     } else {
                         print("Registro exitoso como \(accountType)")
                         // Registro del usuario en Firebase
+                        signUp()
                     }
                 } label: {
                     Text("Registrarse")
@@ -127,4 +144,11 @@ func validatePassword(_ password: String) -> Bool {
     let hasSpecialCharacter = password.range(of: "[^A-Za-z0-9]", options: .regularExpression) != nil
     
     return minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialCharacter
+}
+
+// Función de retorno boolean para la validación del email
+func isValidEmail(_ email: String) -> Bool {
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    let predicate = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+    return predicate.evaluate(with: email)
 }
