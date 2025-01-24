@@ -113,7 +113,7 @@ struct CustomTextField: View {
 }
 
 
-// Campo de contraseña personalizado@
+// Campo de contraseña personalizado
 struct CustomSecureField: View {
     var placeholder: String
     @Binding var text: String
