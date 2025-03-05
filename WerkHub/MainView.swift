@@ -8,32 +8,37 @@
 import SwiftUI
 
 struct MainView: View {
+    
+    @State var selectedtab = 1
     // Variable autentificación
     @AppStorage("isAuthenticated") private var isAuthenticated: Bool = false
     
     var body: some View {
-        VStack {
-            // Texto placeholder hasta definir el contenido
-            Text("Bienvenido a WerkHub")
-                .font(.largeTitle)
-                .padding()
-            
-            // Botón logout para testing
-            Button {
-                isAuthenticated = false
-            } label: {
-                Text("Cerrar sesión")
-                    .bold()
-                    .frame(width: 230, height: 50)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(Color.red)
-                    )
-                    .foregroundStyle(.white)
-            }
-            .padding(.top)
+        TabView(selection: $selectedtab){
+            HomeView()
+                .tabItem {
+                    Image(systemName: "house")
+                    Text("Inicio")
+                }
+            SearchView()
+                .tabItem {
+                    Image(systemName: "magnifyingglass")
+                    Text("Buscar")
+                }
+            ChatView()
+                .tabItem {
+                    Image(systemName: "bubble.left.and.bubble.right")
+                    Text("Chat")
+                }
+            UserView()
+                .tabItem {
+                    Image(systemName: "person.circle")
+                    Text("Usuario")
+                }
         }
-        .navigationTitle("MainView")
+        .background(Color(red: 255/255, green: 246/255, blue: 253/255))
+        .accentColor(Color(red: 225/255, green: 71/255, blue: 126/255))
+        .ignoresSafeArea()
     }
 }
 
