@@ -12,7 +12,8 @@ struct ChatView: View {
         ZStack {
             Color(red: 255/255, green: 217/255, blue: 245/255)
                 .ignoresSafeArea()
-            Text("Chat")
+            Text("Chat\n\n")
+            Text("Esta funcionalidad aún no está implementada")
         }
     }
 }

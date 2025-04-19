@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct SignUpView: View {
     // Variables para el registro de usuario
@@ -20,12 +21,23 @@ struct SignUpView: View {
     
     func signUp(){
         Task {
-            do{
+            do {
                 let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
-                print("Success")
-                print(returnedUserData)
-            }
-            catch{
+                
+                let uid = returnedUserData.uid
+                
+                // Guardar tipo de cuenta en Firestore
+                let db = Firestore.firestore()
+                let userRef = db.collection("users").document(uid)
+                
+                try await userRef.setData([
+                    "email": email,
+                    "accountType": accountType,
+                    "createdAt": Timestamp(date: Date())
+                ])
+                
+                print("Usuario y tipo de cuenta guardados correctamente en Firestore")
+            } catch {
                 print("Error: \(error)")
             }
         }
