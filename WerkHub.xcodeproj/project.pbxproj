@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C44780262DB4363600B97EA5 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = C44780252DB4363600B97EA5 /* FirebaseDatabase */; };
+		C44780282DB4363600B97EA5 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C44780272DB4363600B97EA5 /* FirebaseStorage */; };
 		C479BFA42D437A4800ABB52D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = C479BFA32D437A4800ABB52D /* FirebaseAnalytics */; };
 		C479BFA72D437E2E00ABB52D /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C479BFA62D437E2E00ABB52D /* FirebaseAuth */; };
 		C4BB74EC2D43A60E00C1CFFB /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = C4BB74EB2D43A60E00C1CFFB /* .gitignore */; };
@@ -62,6 +64,8 @@
 			files = (
 				C479BFA42D437A4800ABB52D /* FirebaseAnalytics in Frameworks */,
 				C479BFA72D437E2E00ABB52D /* FirebaseAuth in Frameworks */,
+				C44780262DB4363600B97EA5 /* FirebaseDatabase in Frameworks */,
+				C44780282DB4363600B97EA5 /* FirebaseStorage in Frameworks */,
 				C4FD1B932D5F314800B022F7 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -135,6 +139,8 @@
 				C479BFA32D437A4800ABB52D /* FirebaseAnalytics */,
 				C479BFA62D437E2E00ABB52D /* FirebaseAuth */,
 				C4FD1B922D5F314800B022F7 /* FirebaseFirestore */,
+				C44780252DB4363600B97EA5 /* FirebaseDatabase */,
+				C44780272DB4363600B97EA5 /* FirebaseStorage */,
 			);
 			productName = WerkHub;
 			productReference = C477740B2D398A54002DC5B1 /* WerkHub.app */;
@@ -608,6 +614,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C44780252DB4363600B97EA5 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C479BFA22D437A4800ABB52D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		C44780272DB4363600B97EA5 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C479BFA22D437A4800ABB52D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		C479BFA32D437A4800ABB52D /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C479BFA22D437A4800ABB52D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

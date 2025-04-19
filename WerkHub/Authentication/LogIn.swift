@@ -2,20 +2,24 @@
 //  ContentView.swift
 //  WerkHub
 //
-//  Created by Héctor Velasco on 16/1/25.
+//  Creado por Héctor Velasco el 16/1/25.
 //
 
 import SwiftUI
 import FirebaseAuth
 
+// Vista para el inicio de sesión
 struct LogIn: View {
-    // Variables para el inicio de sesión del usuario
+    
+    // Variable que indica si el usuario ha iniciado sesión correctamente
     @AppStorage("isAuthenticated") private var isAuthenticated: Bool = false
+    
+    // Campos del formulario
     @State private var email = ""
     @State private var password = ""
     @State private var errorMessage: String?
     
-    // Función para la autentificación del usuario
+    // Función que intenta iniciar sesión usando Firebase
     private func signIn() async {
         do {
             let user = try await AuthenticationManager.shared.signIn(email: email, password: password)
@@ -29,43 +33,38 @@ struct LogIn: View {
     
     var body: some View {
         NavigationStack {
-            // Si el usuario ya está autenticado, se le dirige directamente a Main View
+            // Si el usuario ya está autenticado, se muestra la vista principal
             if isAuthenticated {
                 MainView()
             } else {
                 ZStack {
-                    // Fondo
                     Color(red: 255/255, green: 246/255, blue: 253/255)
                     RoundedRectangle(cornerRadius: 30, style: .continuous)
                         .foregroundStyle(Color(red: 255/255, green: 217/255, blue: 245/255))
                         .frame(width: 1000, height: 400)
                         .rotationEffect(.degrees(135))
-                        .offset(y: -320)
                     RoundedRectangle(cornerRadius: 30, style: .continuous)
                         .foregroundStyle(.white)
                         .frame(width: 300, height: 450)
                     
-                    // Contenido
+                    // Contenido del formulario
                     VStack(spacing: 20) {
-                        
-                        // Logo
                         Image("WerkHub_Text")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                         
-                        // Campos personalizados
                         CustomTextField(placeholder: "Email", text: $email)
                         CustomSecureField(placeholder: "Contraseña", text: $password)
                         
-                        // Mostrar mensaje de error si no existe la cuenta
+                        // Mensaje de error si el inicio de sesión falla
                         if errorMessage != nil {
                             Text("No se ha encontrado una cuenta con ese email y/o contraseña.")
-                                .foregroundColor(.red) // Color rojo para el mensaje de error
+                                .foregroundColor(.red)
                                 .font(.caption)
                                 .padding(.top, 10)
                         }
                         
-                        // Botón de inicio de sesión
+                        // Botón para iniciar sesión
                         Button {
                             Task {
                                 await signIn()
@@ -82,7 +81,7 @@ struct LogIn: View {
                         }
                         .padding(.top)
                         
-                        // Enlace al registro
+                        // Enlace a la vista de registro
                         NavigationLink(destination: SignUpView()) {
                             Text("¿Todavía no tienes una cuenta? Regístrate")
                                 .bold()
@@ -102,7 +101,7 @@ struct LogIn: View {
     LogIn()
 }
 
-// Extensión para los placeholders en los campos de texto
+// Extensión para mostrar un placeholder cuando el campo está vacío
 extension View {
     func placeholder<Content: View>(
         when shouldShow: Bool,
@@ -118,7 +117,7 @@ extension View {
     }
 }
 
-// Campo de texto personalizado
+// Campo de texto personalizado para email u otros datos
 struct CustomTextField: View {
     var placeholder: String
     @Binding var text: String
@@ -141,7 +140,6 @@ struct CustomTextField: View {
         }
     }
 }
-
 
 // Campo de contraseña personalizado
 struct CustomSecureField: View {

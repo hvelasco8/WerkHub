@@ -2,39 +2,49 @@
 //  Register.swift
 //  WerkHub
 //
-//  Created by Héctor Velasco on 20/1/25.
+//  Creado por Héctor Velasco el 20/1/25.
 //
 
 import SwiftUI
+import FirebaseFirestore
 
+// Vista de registro de nuevos usuarios
 struct SignUpView: View {
-    // Variables para el registro de usuario
+    
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
     @State private var accountType = "Artista"
     @State private var errorMessage: String = ""
     
-    // Tipos de cuenta
     let accountTypes = ["Artista", "Promotor"]
     
-    func signUp(){
+    // Función que registra al usuario y guarda sus datos en Firestore
+    func signUp() {
         Task {
-            do{
+            do {
                 let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
-                print("Success")
-                print(returnedUserData)
-            }
-            catch{
+                let uid = returnedUserData.uid
+                
+                let db = Firestore.firestore()
+                let userRef = db.collection("users").document(uid)
+                
+                try await userRef.setData([
+                    "email": email,
+                    "accountType": accountType,
+                    "createdAt": Timestamp(date: Date())
+                ])
+                
+                print("Usuario y tipo de cuenta guardados correctamente en Firestore")
+            } catch {
                 print("Error: \(error)")
             }
         }
     }
     
-    
     var body: some View {
         ZStack {
-            // Fondo
+            // Mismo fondo que en la vista LogIn
             Color(red: 255/255, green: 246/255, blue: 253/255)
                 .ignoresSafeArea()
             
@@ -42,26 +52,23 @@ struct SignUpView: View {
                 .foregroundStyle(Color(red: 255/255, green: 217/255, blue: 245/255))
                 .frame(width: 1000, height: 400)
                 .rotationEffect(.degrees(135))
-                .offset(y: -320)
             
             RoundedRectangle(cornerRadius: 30, style: .continuous)
                 .foregroundStyle(.white)
                 .frame(width: 300, height: 550)
             
-            //Contenido
+            // Contenido del formulario
             VStack(spacing: 20) {
                 
-                //Logo
                 Image("WerkHub_Text")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 
-                // Campos personalizados - Definidos en ContentView
                 CustomTextField(placeholder: "Email", text: $email)
                 CustomSecureField(placeholder: "Contraseña", text: $password)
                 CustomSecureField(placeholder: "Repetir contraseña", text: $confirmPassword)
                 
-                // Reglas para la validación de la contraseña
+                // Reglas de validación para la contraseña
                 VStack(alignment: .leading, spacing: 5) {
                     Text("• Mínimo 8 caracteres")
                         .foregroundColor(password.count >= 8 ? .green : .red)
@@ -80,7 +87,7 @@ struct SignUpView: View {
                         .font(.caption)
                 }
                 
-                // Selector tipo de cuenta
+                // Selector de tipo de cuenta
                 Picker("Tipo de cuenta", selection: $accountType) {
                     ForEach(accountTypes, id: \.self) {
                         Text($0)
@@ -94,7 +101,7 @@ struct SignUpView: View {
                 )
                 .foregroundStyle(.black)
                 
-                // Botón de registro y validación
+                // Botón de registro con validaciones
                 Button {
                     if password != confirmPassword {
                         errorMessage = "Las contraseñas no coinciden"
@@ -104,7 +111,6 @@ struct SignUpView: View {
                         errorMessage = "Formato de correo inválido"
                     } else {
                         print("Registro exitoso como \(accountType)")
-                        // Registro del usuario en Firebase
                         signUp()
                     }
                 } label: {
@@ -118,7 +124,7 @@ struct SignUpView: View {
                         .foregroundStyle(.black)
                 }
                 
-                // Mensaje de error, en el caso que exista
+                // Mensaje de error si hay problemas en el formulario
                 if !errorMessage.isEmpty {
                     Text(errorMessage)
                         .foregroundColor(.red)
@@ -135,7 +141,7 @@ struct SignUpView: View {
     SignUpView()
 }
 
-// Función de retorno boolean para la validación de la contraseña
+// Validación de contraseña con requisitos de seguridad
 func validatePassword(_ password: String) -> Bool {
     let minLength = password.count >= 8
     let hasUppercase = password.range(of: "[A-Z]", options: .regularExpression) != nil
@@ -146,7 +152,7 @@ func validatePassword(_ password: String) -> Bool {
     return minLength && hasUppercase && hasLowercase && hasNumber && hasSpecialCharacter
 }
 
-// Función de retorno boolean para la validación del email
+// Validación básica de formato de email
 func isValidEmail(_ email: String) -> Bool {
     let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
     let predicate = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
