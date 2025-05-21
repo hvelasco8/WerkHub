@@ -1,11 +1,11 @@
-//
-//  HomeView.swift
-//  WerkHub
-//
-//  Created by Héctor Velasco on 14/2/25.
-//
-
 import SwiftUI
+
+struct Profile: Identifiable {
+    let id = UUID()
+    let name: String
+    let imageName: String
+    let description: String
+}
 
 struct HomeView: View {
     // Lista de eventos drag reales de Madrid
@@ -24,6 +24,8 @@ struct HomeView: View {
         Promoter(id: "12", name: "Bitch Party", imageUrl: "https://example.com/bitchparty.jpg", bio: "Cabaret drag alternativo con artistas queer y espectáculos únicos.", eventsHosted: 12, rating: 4.6)
     ]
     
+    // Custom background color
+    let customBackgroundColor = Color(red: 255/255, green: 217/255, blue: 245/255)
     
     var body: some View {
         ZStack {

@@ -24,8 +24,10 @@ struct SignUpView: View {
         Task {
             do {
                 let returnedUserData = try await AuthenticationManager.shared.createUser(email: email, password: password)
+                
                 let uid = returnedUserData.uid
                 
+                // Guardar tipo de cuenta en Firestore
                 let db = Firestore.firestore()
                 let userRef = db.collection("users").document(uid)
                 
