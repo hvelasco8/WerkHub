@@ -5,21 +5,27 @@
 //  Created by Héctor Velasco on 14/2/25.
 //
 
+// SearchView.swift
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
-// Vista que permite buscar eventos y filtrarlos por categoría
 struct SearchView: View {
-    
-    // Texto de búsqueda introducido por el usuario
     @State private var searchText: String = ""
-    
-    // Categoría actualmente seleccionada
     @State private var selectedCategory: String = "Todos"
+    @State private var accountType: String? = nil
+    @State private var isLoading = true
     
-    // Categorías disponibles para filtrar eventos
-    let categories = ["Todos", "Drag", "Queer", "Fiesta", "Performance"]
+    var eventCategories: [String] {
+        let categories = Set(allEvents.map { $0.category })
+        return ["Todos"] + Array(categories).sorted()
+    }
     
-    // Lista de eventos simulados
+    var artistCategories: [String] {
+        let styles = Set(artists.map { $0.style })
+        return ["Todos"] + Array(styles).sorted()
+    }
+    
     let allEvents: [Event] = [
         Event(name: "La Liada", category: "Drag", date: "Sábado 25 Mayo", description: "Una de las fiestas drag más vibrantes de Madrid."),
         Event(name: "This Is Drag", category: "Performance", date: "Jueves 30 Mayo", description: "Show con artistas invitadas internacionales."),
@@ -38,7 +44,23 @@ struct SearchView: View {
         Event(name: "Fiesta Flower Trap", category: "Drag", date: "Sábado 13 Julio", description: "Fusión entre trap, reggaetón y shows travestis.")
     ]
     
-    // Filtra los eventos según el texto y la categoría seleccionada
+    let artists: [Artist] = [
+        Artist(id: "1", name: "Sasha Colby", imageUrl: "https://example.com/sasha.jpg", bio: "Artista drag reconocida internacionalmente por su talento y carisma.", style: "Glamour"),
+        Artist(id: "2", name: "Monet X Change", imageUrl: "https://example.com/monet.jpg", bio: "Drag queen y comediante que combina humor con arte visual.", style: "Comedia"),
+        Artist(id: "3", name: "Bob the Drag Queen", imageUrl: "https://example.com/bob.jpg", bio: "Activista y performer, conocida por su personalidad arrolladora.", style: "Comedia"),
+        Artist(id: "4", name: "Krystal Versace", imageUrl: "https://example.com/krystal.jpg", bio: "Joven promesa del drag con un estilo visual impactante.", style: "Fashion"),
+        Artist(id: "5", name: "Jujubee", imageUrl: "https://example.com/jujubee.jpg", bio: "Artista con gran trayectoria en el mundo del drag y la música.", style: "Versátil"),
+        Artist(id: "6", name: "Kim Jayne", imageUrl: "https://example.com/kim.jpg", bio: "Performer drag con espectáculos llenos de emoción.", style: "Drama"),
+        Artist(id: "7", name: "Rebeca Santa María", imageUrl: "https://example.com/rebeca.jpg", bio: "Artista que fusiona folclore y cultura drag en shows únicos.", style: "Folclore"),
+        Artist(id: "8", name: "Ilse Alamierda", imageUrl: "https://example.com/ilse.jpg", bio: "Explora el drag desde lo conceptual y experimental.", style: "Conceptual"),
+        Artist(id: "9", name: "Chuleta de Cerda", imageUrl: "https://example.com/chuleta.jpg", bio: "Humor, irreverencia y shows memorables.", style: "Comedia"),
+        Artist(id: "10", name: "Angelina Moore", imageUrl: "https://example.com/angelina.jpg", bio: "Drag queen sofisticada con presencia escénica única.", style: "Elegancia"),
+        Artist(id: "11", name: "La Bella Vampi", imageUrl: "https://example.com/vampi.jpg", bio: "Artista con un toque oscuro y teatral.", style: "Gothic"),
+        Artist(id: "12", name: "Le Coco", imageUrl: "https://example.com/lecoco.jpg", bio: "Estética retro y actitud desenfadada en el escenario.", style: "Retro"),
+        Artist(id: "13", name: "Chloe Vittu", imageUrl: "https://example.com/chloe.jpg", bio: "Fusiona baile y lip-sync en espectáculos cautivadores.", style: "Dance"),
+        Artist(id: "14", name: "Lassie Verguenza", imageUrl: "https://example.com/lassie.jpg", bio: "Actuaciones divertidas que sacan sonrisas.", style: "Comedia")
+    ]
+    
     var filteredEvents: [Event] {
         allEvents.filter { event in
             (selectedCategory == "Todos" || event.category == selectedCategory) &&
@@ -46,67 +68,102 @@ struct SearchView: View {
         }
     }
     
+    var filteredArtists: [Artist] {
+        artists.filter { artist in
+            (selectedCategory == "Todos" || artist.style == selectedCategory) &&
+            (searchText.isEmpty || artist.name.lowercased().contains(searchText.lowercased()))
+        }
+    }
+    
     var body: some View {
         ZStack {
-            // Color de fondo de la vista
-            Color(red: 255/255, green: 217/255, blue: 245/255)
-                .ignoresSafeArea()
+            Color(red: 255/255, green: 217/255, blue: 245/255).ignoresSafeArea()
             
-            VStack(spacing: 20) {
-                
-                // Título de la sección
-                HStack {
-                    Text("Buscar Eventos")
-                        .font(.title2)
-                        .bold()
-                        .foregroundColor(.black)
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.top)
-                
-                // Campo de búsqueda
-                TextField("Buscar por nombre...", text: $searchText)
-                    .padding(12)
-                    .background(Color.white.opacity(0.9))
-                    .cornerRadius(10)
+            if isLoading {
+                ProgressView("Cargando...")
+            } else {
+                VStack(spacing: 20) {
+                    HStack {
+                        Text("Buscar")
+                            .font(.title2)
+                            .bold()
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
                     .padding(.horizontal)
-                
-                // Selector de categorías
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(categories, id: \.self) { category in
-                            Text(category)
-                                .font(.caption)
-                                .bold()
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
-                                .background(
-                                    selectedCategory == category ?
-                                    Color(red: 225/255, green: 71/255, blue: 126/255) :
-                                        Color.white.opacity(0.9)
-                                )
-                                .foregroundColor(selectedCategory == category ? .white : .black)
-                                .cornerRadius(20)
-                                .onTapGesture {
-                                    selectedCategory = category
+                    .padding(.top)
+                    
+                    TextField("Buscar por nombre...", text: $searchText)
+                        .padding(12)
+                        .background(Color.white.opacity(0.9))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    
+                    // Filtros por categoría según el tipo de usuario
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            let categories = accountType == "Artista" ? eventCategories : artistCategories
+                            ForEach(categories, id: \.self) { category in
+                                Text(category)
+                                    .font(.caption)
+                                    .bold()
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        selectedCategory == category ?
+                                        Color(red: 225/255, green: 71/255, blue: 126/255) :
+                                            Color.white.opacity(0.9)
+                                    )
+                                    .foregroundColor(selectedCategory == category ? .white : .black)
+                                    .cornerRadius(20)
+                                    .onTapGesture {
+                                        selectedCategory = category
+                                    }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            if accountType == "Artista" {
+                                Text("Eventos")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                ForEach(filteredEvents) { event in
+                                    EventCard(event: event)
                                 }
+                            } else if accountType == "Promotor" {
+                                Text("Artistas")
+                                    .font(.headline)
+                                    .padding(.horizontal)
+                                ForEach(filteredArtists) { artist in
+                                    ArtistResultCard(artist: artist)
+                                }
+                            } else {
+                                Text("No hay resultados disponibles.")
+                                    .padding()
+                            }
                         }
+                        .padding(.top, 10)
                     }
-                    .padding(.horizontal)
-                }
-                
-                // Resultados de la búsqueda filtrada
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(filteredEvents) { event in
-                            EventCard(event: event)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
                 }
             }
+        }
+        .onAppear {
+            fetchAccountType()
+        }
+    }
+    
+    func fetchAccountType() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        isLoading = true
+        let docRef = Firestore.firestore().collection("users").document(uid)
+        docRef.getDocument { document, error in
+            if let document = document, document.exists {
+                accountType = document.get("accountType") as? String
+            }
+            isLoading = false
         }
     }
 }
@@ -118,32 +175,6 @@ struct Event: Identifiable {
     let category: String
     let date: String
     let description: String
-}
-
-// Vista que representa una tarjeta de evento
-struct EventCard: View {
-    let event: Event
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(event.name)
-                .font(.headline)
-                .foregroundColor(Color(red: 225/255, green: 71/255, blue: 126/255))
-            
-            Text(event.date)
-                .font(.subheadline)
-                .foregroundColor(.gray)
-            
-            Text(event.description)
-                .font(.caption)
-                .foregroundColor(.black)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
-        .background(Color.white.opacity(0.95))
-        .cornerRadius(15)
-        .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
-    }
 }
 
 #Preview {
